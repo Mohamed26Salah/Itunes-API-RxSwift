@@ -44,17 +44,17 @@ final class APIHandler {
         return URLSession.shared.rx.response(request: request)
             .map { result -> Data in
                 guard result.response.statusCode == 200 else {
+                    print(result.response)
                     throw Error.invalidResponse(result.response)
                 }
                 return result.data
             }.map { data in
                 do {
                     let searchResult = try JSONDecoder().decode(
-                        T.self, from: data
+                        parsingType.self, from: data
                     )
                     return searchResult
-                } catch let error {
-                    throw Error.invalidJSON(error)
+                } catch let error {                    throw Error.invalidJSON(error)
                 }
             }
             .observe(on: MainScheduler.instance)

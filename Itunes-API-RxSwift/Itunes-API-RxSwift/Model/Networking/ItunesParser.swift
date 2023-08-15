@@ -23,7 +23,7 @@ struct ItunesParser: Codable {
 // MARK: - Result
 struct ItunesSearchResult: Codable {
     var wrapperType: WrapperType?
-    var kind: Kind?
+    var kind: Kind? = nil
     var collectionID: Int?
     var trackID: Int?
     var artistName: String
@@ -35,11 +35,11 @@ struct ItunesSearchResult: Codable {
     var collectionArtistViewURL: String?
     var collectionViewURL: String?
     var trackViewURL: String?
-    var previewURL: String
+    var previewURL: String?
     var artworkUrl30: String?
     var artworkUrl60: String
     var artworkUrl100: String
-    var collectionPrice: Double
+    var collectionPrice: Double?
     var trackPrice: Double?
     var trackRentalPrice: Double?
     var collectionHDPrice: Double?
@@ -85,7 +85,6 @@ struct ItunesSearchResult: Codable {
         case artworkUrl30 = "artworkUrl30"
         case artworkUrl60 = "artworkUrl60"
         case artworkUrl100 = "artworkUrl100"
-        case collectionPrice = "collectionPrice"
         case trackPrice = "trackPrice"
         case trackRentalPrice = "trackRentalPrice"
         case collectionHDPrice = "collectionHdPrice"
@@ -118,7 +117,21 @@ struct ItunesSearchResult: Codable {
 enum Explicitness: String, Codable {
     case explicit = "explicit"
     case notExplicit = "notExplicit"
+    case unknown = "unknown" 
+
+    init(from decoder: Decoder) throws {
+        let stringValue = try decoder.singleValueContainer().decode(String.self)
+        switch stringValue {
+        case "explicit":
+            self = .explicit
+        case "notExplicit":
+            self = .notExplicit
+        default:
+            self = .unknown
+        }
+    }
 }
+
 
 enum Country: String, Codable {
     case usa = "USA"
@@ -132,6 +145,7 @@ enum Kind: String, Codable {
     case featureMovie = "feature-movie"
     case song = "song"
     case tvEpisode = "tv-episode"
+    case podcast = "podcast"
 }
 
 enum WrapperType: String, Codable {
